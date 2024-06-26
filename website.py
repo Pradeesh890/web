@@ -401,125 +401,84 @@ graph1.a_star_algorithm('A', 'D')
             import random
 
 class WumpusWorld:
-    def __init__(self):
-        self.size = 4
-        self.world = [['' for _ in range(self.size)] for _ in range(self.size)]
-        self.agent_pos = (0, 0)
-        self.arrow = True
-        self.gold_collected = False
-        self.place_elements()
+    def __init__(self, size=4):
+        self.size = size
+        self.board = [[' ' for _ in range(size)] for _ in range(size)]
+        self.agent_pos = [0, 0]
+        self.wumpus_pos = self.random_empty_cell()
+        self.gold_pos = self.random_empty_cell()
+        self.pits = [self.random_empty_cell() for _ in range(size-1)]
+        self.board[self.agent_pos[0]][self.agent_pos[1]] = 'A'
+        self.board[self.wumpus_pos[0]][self.wumpus_pos[1]] = 'W'
+        self.board[self.gold_pos[0]][self.gold_pos[1]] = 'G'
+        for pit in self.pits:
+            self.board[pit[0]][pit[1]] = 'P'
 
-    def place_elements(self):
-        # Place pits
-        for _ in range(3):
-            self.place_random('P')
-        # Place Wumpus
-        self.place_random('W')
-        # Place Gold
-        self.place_random('G')
-        # Add percepts around Pits (Breeze) and Wumpus (Stench)
-        self.add_percepts()
-
-    def place_random(self, element):
+    def random_empty_cell(self):
         while True:
-            row = random.randint(0, self.size - 1)
-            col = random.randint(0, self.size - 1)
-            if self.world[row][col] == '' and (row, col) != (0, 0):
-                self.world[row][col] = element
-                break
+            cell = [random.randint(0, self.size-1), random.randint(0, self.size-1)]
+            if cell != [0, 0] and self.board[cell[0]][cell[1]] == ' ':
+                return cell
 
-    def add_percepts(self):
-        for row in range(self.size):
-            for col in range(self.size):
-                if self.world[row][col] == 'P':
-                    self.add_adjacent_percept(row, col, 'B')
-                elif self.world[row][col] == 'W':
-                    self.add_adjacent_percept(row, col, 'S')
+    def print_board(self):
+        for row in self.board:
+            print(' | '.join(row))
+            print('-' * (self.size * 4 - 1))
 
-    def add_adjacent_percept(self, row, col, percept):
-        for r, c in self.get_adjacent_cells(row, col):
-            if self.world[r][c] == '':
-                self.world[r][c] = percept
-            elif self.world[r][c] not in ['P', 'W', 'G']:
-                self.world[r][c] += percept
+    def get_percepts(self):
+        percepts = []
+        if self.is_adjacent(self.agent_pos, self.wumpus_pos):
+            percepts.append('You smell a Wumpus!')
+        if self.is_adjacent(self.agent_pos, self.gold_pos):
+            percepts.append('You see a glimmer!')
+        for pit in self.pits:
+            if self.is_adjacent(self.agent_pos, pit):
+                percepts.append('You feel a breeze!')
+        return percepts
 
-    def get_adjacent_cells(self, row, col):
-        adjacent = []
-        if row > 0: adjacent.append((row - 1, col))
-        if row < self.size - 1: adjacent.append((row + 1, col))
-        if col > 0: adjacent.append((row, col - 1))
-        if col < self.size - 1: adjacent.append((row, col + 1))
-        return adjacent
-
-    def print_world(self):
-        for row in self.world:
-            print(row)
+    def is_adjacent(self, pos1, pos2):
+        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1]) == 1
 
     def move_agent(self, row, col):
-        if not (0 <= row < self.size and 0 <= col < self.size):
-            print("Invalid move. Try again.")
-            return False
+        if 0 <= row < self.size and 0 <= col < self.size:
+            self.agent_pos = [row, col]
 
-        self.agent_pos = (row, col)
-        cell = self.world[row][col]
-
-        if 'P' in cell:
-            if self.gold_collected:
-                print("You were really close but unfortunately you failed!!! Try next time")
-            else:
-                print("Game over! Sorry, try next time!!!")
-            return True
-
-        if 'W' in cell:
-            if self.gold_collected:
-                print("You were really close but unfortunately you failed!!! Try next time")
-            else:
-                print("Game over! Sorry, try next time!!!")
-            return True
-
-        if 'G' in cell:
-            self.gold_collected = True
-            print("You found gold!")
-            print("You have unlocked next level, move back to your initial position.")
-            self.world[row][col] = self.world[row][col].replace('G', '')
-
-        if 'S' in cell:
-            print("You came across a stench")
-        if 'B' in cell:
-            print("You feel a breeze")
-
-        if self.gold_collected and self.agent_pos == (0, 0):
-            print("You won!!!")
-            return True
-
-        return False
-
-    def get_possible_moves(self):
-        row, col = self.agent_pos
-        moves = self.get_adjacent_cells(row, col)
+        if self.agent_pos == self.wumpus_pos:
+            return 'You were eaten by the Wumpus!'
+        if self.agent_pos in self.pits:
+            return 'You fell into a pit!'
+        if self.agent_pos == self.gold_pos:
+            return 'You found the gold and won!'
+        return None
+    
+    def available_moves(self):
+        moves = []
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        for direction in directions:
+            new_row = self.agent_pos[0] + direction[0]
+            new_col = self.agent_pos[1] + direction[1]
+            if 0 <= new_row < self.size and 0 <= new_col < self.size:
+                moves.append((new_row, new_col))
         return moves
 
-def main():
-    game = WumpusWorld()
-    print("Initially agent is at 0,0")
-    while True:
-        possible_moves = game.get_possible_moves()
-        for move in possible_moves:
-            print(f"You can go to {move[0]} {move[1]}")
 
-        try:
-            row = int(input("Enter input for row: "))
-            col = int(input("Enter input for column: "))
-        except ValueError:
-            print("Invalid input. Please enter integer values.")
-            continue
-
-        print(f"Now the agent is at {row},{col}")
-        if game.move_agent(row, col):
-            break
-
-if __name__ == "__main__":
-    main()
+game = WumpusWorld()
+while True:
+    game.print_board()
+    percepts = game.get_percepts()
+    for p in percepts:
+        print(p)
+    
+    available_moves = game.available_moves()
+    print("Available moves:", available_moves)
+    
+    move = input("Enter move (row col): ").split()
+    row, col = int(move[0]), int(move[1])
+    result = game.move_agent(row, col)
+    if result:
+        game.print_board()
+        print(result)
+        break
 
             """
     st.code(wumpus, language='python')
