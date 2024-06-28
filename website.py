@@ -93,7 +93,7 @@ while(true)
 
     st.code(tcpserver,language='java')
 
-    st.amrkdown("TCP CLIENT JAVA")
+    st.markdown("TCP CLIENT JAVA")
     tcpclient="""import java.net.*;
 import java.io.*; 
 public class TCPClient
