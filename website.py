@@ -5,6 +5,35 @@ def create_direct_download_link(shareable_link):
     direct_link = f"https://drive.google.com/uc?export=download&id={file_id}"
     return direct_link
 
+def main():
+    st.markdown("UDP SERVER JAVA")
+    udp="""import java.io.*;
+import java.net.*;
+ class UDPServer
+{
+   public static void main(String args[]) throws Exception
+      {
+         DatagramSocket serverSocket = new DatagramSocket(9876);
+            byte[] receiveData = new byte[1024];
+            byte[] sendData = new byte[1024];
+            while(true)
+               {
+                  DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                  serverSocket.receive(receivePacket);
+                  String sentence = new String( receivePacket.getData());
+                  System.out.println("RECEIVED: " + sentence);
+                  InetAddress IPAddress = receivePacket.getAddress();
+                  int port = receivePacket.getPort();
+                  String capitalizedSentence = sentence.toUpperCase();
+                  sendData = capitalizedSentence.getBytes();
+                  DatagramPacket sendPacket =
+                  new DatagramPacket(sendData, sendData.length, IPAddress, port);
+                  serverSocket.send(sendPacket);
+               }
+      }
+}"""
+    st.code(udp,language='python')
+
 files = {
     "UDP SERVER JAVA": "https://drive.google.com/file/d/1dcRxuAz_D-bXrN0TPZsS7qS3g738jRVc/view?usp=drive_link",
     "UDP CLIENT JAVA": "https://drive.google.com/file/d/1fzkgsgxUuVg3T3dHmpPvw2q_Si8TDAsp/view?usp=drive_link",
