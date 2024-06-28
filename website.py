@@ -60,7 +60,7 @@ class UDPClient
    }
 }
 """
-    st.code(udpserver,language='java)
+    st.code(udpserver,language='java')
 
     st.markdown("TCP SERVER JAVA")
     tcpserver="""import java.net.*;
