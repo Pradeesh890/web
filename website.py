@@ -34,11 +34,92 @@ import java.net.*;
 }"""
     st.code(udp, language='java')
 
+    st.markdown("UDP CLIENT JAVA")
+    udpserver="""import java.io.*;
+import java.net.*;
+class UDPClient
+{
+   public static void main(String args[]) throws Exception
+   {
+      BufferedReader inFromUser =
+         new BufferedReader(new InputStreamReader(System.in));
+      DatagramSocket clientSocket = new DatagramSocket();
+      InetAddress IPAddress = InetAddress.getByName("localhost");
+      byte[] sendData = new byte[1024];
+      byte[] receiveData = new byte[1024];
+      String sentence = inFromUser.readLine();
+      sendData = sentence.getBytes();
+      DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress,   
+      9876);
+      clientSocket.send(sendPacket);
+      DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+      clientSocket.receive(receivePacket);
+      String modifiedSentence = new String(receivePacket.getData());
+      System.out.println("FROM SERVER:" + modifiedSentence);
+      clientSocket.close();
+   }
+}
+"""
+    st.code(udpserver,language='java)
+
+    st.markdown("TCP SERVER JAVA")
+    tcpserver="""import java.net.*;
+ import java.io.*;
+public class TCPServer
+{ 
+  public static void main(String s[])throws IOException
+  {
+    //  Initialising the ServerSocket
+      ServerSocket sok = new ServerSocket(3128); 
+   // Gives the Server Details Machine name, Port number
+      System.out.println("Server Started  :"+sok);
+   // makes a socket connection to particular client after 
+        // which two way communication take place 
+     Socket so = sok.accept();
+     System.out.println("Client Connected  :"+ so);   
+     InputStream in = so.getInputStream(); 
+     OutputStream os = so.getOutputStream();
+     PrintWriter pr = new PrintWriter(os);
+BufferedReader br = new BufferedReader(new  InputStreamReader(in));
+BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));      
+while(true)
+     {
+         System.out.println("Msg  frm client: "+ br.readLine());
+ System.out.print("Msg to client: "); 
+         pr.println(br1.readLine());
+         pr.flush();
+     }   }
+}    """
+
+    st.code(tcpserver,language='java')
+
+    st.amrkdown("TCP CLIENT JAVA")
+    tcpclient="""import java.net.*;
+import java.io.*; 
+public class TCPClient
+{ 
+ public static void main(String s[])throws IOException
+ { 
+  Socket sok = new Socket("localhost",3128);
+  InputStream in = sok.getInputStream(); 
+  OutputStream ou = sok.getOutputStream();
+  PrintWriter pr = new PrintWriter(ou); 
+  BufferedReader br1 = new BufferedReader(new InputStreamReader(in));
+  BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 
+  while(true)
+  { 
+   System.out.print("Msg to Server:");
+   pr.println(br.readLine()); 
+   pr.flush();
+   System.out.println("Msg  frm server: "+br1.readLine()); 
+  }
+ } 
+}    
+
+"""
+    st.code(tcpclient,language='java')
+
     files = {
-        "UDP SERVER JAVA": "https://drive.google.com/file/d/1dcRxuAz_D-bXrN0TPZsS7qS3g738jRVc/view?usp=drive_link",
-        "UDP CLIENT JAVA": "https://drive.google.com/file/d/1fzkgsgxUuVg3T3dHmpPvw2q_Si8TDAsp/view?usp=drive_link",
-        "TCP SERVER JAVA": "https://drive.google.com/file/d/1tbwK5h7MZGMdnTv2rhxri9rJWn1DCFBK/view?usp=drive_link",
-        "TCP CLIENT JAVA": "https://drive.google.com/file/d/19FGPILKKwWj12MBus9uaWQSH4duLryk2/view?usp=drive_link",
         "LINK STATE ROUTING": "https://drive.google.com/file/d/1QfCYWcZpdNYzQoxz8xQ1FjZ8GMPSZx9Y/view?usp=sharing",
         "TCP EMAIL CISCO": "https://drive.google.com/file/d/1uVMUQ3yignyX8_Z6bjGTSf9JzboO5fsL/view?usp=drive_link",
         "STUDY OF PACKET TRACER": "https://drive.google.com/file/d/1nFmOoY_Mu0-eRSn2l_GGBRvjiCPOLRej/view?usp=drive_link",
