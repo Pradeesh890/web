@@ -7,10 +7,10 @@ shell_script = """
 echo "Enter the two numbers: "
 read a b
 
-echo "5.Addition"
-echo "6.Subtraction"
-echo "7.Multiplication"
-echo "8.Division"
+echo "1.Addition"
+echo "2.Subtraction"
+echo "3.Multiplication"
+echo "4.Division"
 echo "Enter the option: "
 read option
 
