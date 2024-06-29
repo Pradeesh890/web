@@ -1,4 +1,4 @@
-import streamlit as 
+import streamlit as st
 
 st.title("Simple calculator")
 shell_script = """
